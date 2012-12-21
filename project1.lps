@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="4">
+      <Unit0>
+        <Filename Value="project1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="project1"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="31"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="synchropts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Synchropts"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4"/>
+        <CursorPos X="24" Y="32"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="semaphores.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="semaphores"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="149" Y="37"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit3>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="11" HistoryIndex="10">
+      <Position1>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="32" Column="56" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="26" Column="1" TopLine="2"/>
+      </Position2>
+      <Position3>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="49" Column="24" TopLine="12"/>
+      </Position3>
+      <Position4>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="8" Column="1" TopLine="2"/>
+      </Position4>
+      <Position5>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="29" Column="43" TopLine="5"/>
+      </Position5>
+      <Position6>
+        <Filename Value="semaphores.pas"/>
+        <Caret Line="31" Column="13" TopLine="7"/>
+      </Position6>
+      <Position7>
+        <Filename Value="synchropts.pas"/>
+        <Caret Line="30" Column="102" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="synchropts.pas"/>
+        <Caret Line="22" Column="36" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="synchropts.pas"/>
+        <Caret Line="25" Column="34" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="synchropts.pas"/>
+        <Caret Line="20" Column="39" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="synchropts.pas"/>
+        <Caret Line="40" Column="56" TopLine="1"/>
+      </Position11>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
