@@ -19,11 +19,20 @@ type
         procedure P();
         procedure V();
 
+        procedure VIfLocked();
+
         procedure HangUntilBusy();         // wisi az semafor == 0
 
     end;
 
+    TBinarySemaphore = TSemaphore;         // zeby intencja byla jasna
+
 implementation
+procedure TSemaphore.VIfLocked();
+begin
+     if WaitForSingleObject(Handle, 0) = WAIT_TIMEOUT then self.V();
+end;
+
 procedure TSemaphore.HangUntilBusy();
 begin
    while WaitForSingleObject(Handle, 0) <> WAIT_TIMEOUT do
@@ -34,7 +43,7 @@ begin
 end;
 constructor TSemaphore.Create();
 begin
-     Handle := CreateSemaphore(nil, 1, 1, nil);
+     Handle := CreateSemaphore(nil, 0, $FFFF, nil);
 end;
 constructor TSemaphore.Create(StartingStatus, MaximumStatus: Cardinal);
 begin
