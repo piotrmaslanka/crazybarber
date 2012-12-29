@@ -40,6 +40,12 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    stsGotKli: TLabel;
+    stsGotKli1: TLabel;
+    stsPoczekalni: TLabel;
     Memo1: TMemo;
     Memo2: TMemo;
     Timer1: TTimer;
@@ -72,9 +78,18 @@ var
 
   Form1: TForm1;
 
+  Memo2Semaphore: TBinarySemaphore;   // semafor do ochrony Memo2
+
 implementation
 
 {$R *.lfm}
+
+procedure Log(s: String);
+begin
+  Memo2Semaphore.P();
+  Form1.Memo2.Lines.Append(IntToStr(GetThreadID())+': '+s);
+  Memo2Semaphore.V();
+end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
@@ -118,6 +133,9 @@ end;
 procedure TForm1.Krok;
 begin
   StartLockstep();
+  Label1.Caption := IntToStr(GotowiKlienci.CurrentValue);
+  Label2.Caption := IntToStr(PoczekalniaSemafor.CurrentValue);
+  Label3.Caption := IntToStr(LiczbaWolnychSiedzen);
   WypiszStatusWatkow();
   EndLockstep();
 end;
@@ -171,11 +189,12 @@ begin
 
     status := 'Ide w kierunku poczekalni...';
     PoczekalniaSemafor.P();
+    Log('Pozyskany semafor poczekalni');
     status := 'Jestem w poczekalni... [MAM SEMAFOR p]';
     self.SignalStep;
 
     status := 'Zgarniam klienta [MAM SEMAFOR p]';
-    Dec(LiczbaWolnychSiedzen);
+    InterlockedIncrement(LiczbaWolnychSiedzen);
     MonitorKolejki.P();
         GolonyKlient := Kolejka[0];
         Kolejka.Delete(0);
@@ -186,6 +205,7 @@ begin
 
     status := 'Zwalniam semafor poczekalni';
     PoczekalniaSemafor.V();
+    Log('Zwolniony semafor poczekalni');
     self.SignalStep;
 
     status := 'Gole klienta...';
@@ -210,11 +230,12 @@ begin
   status := 'Blokuje semafor poczekalni...';
   self.SignalStep;
   PoczekalniaSemafor.P();
+  Log('Pozyskany semafor poczekalni');
 
   if LiczbaWolnychSiedzen > 0 then
   begin
     status := 'Rozsiadam sie [MAM SEMAFOR p]';
-    Dec(LiczbaWolnychSiedzen);
+    InterlockedDecrement(LiczbaWolnychSiedzen);
     MonitorKolejki.P();
         Kolejka.Add(self);
     MonitorKolejki.V();
@@ -226,6 +247,7 @@ begin
 
     status := 'Bede zwalnial blokade poczekalni [MAM SEMAFOR p]';
     self.SignalStep;
+    Log('Zwolniony semafor poczekalni');
     PoczekalniaSemafor.V();
 
     status := 'Juz zwolnilem blokade';
@@ -239,6 +261,7 @@ begin
   end else
   begin
     status := 'Wychodze, nie ma miejsca. Zwalniam semafor poczekalni';
+    Log('Zwolniony semafor poczekalni');
     PoczekalniaSemafor.V();
     self.SignalStep;
   end;
@@ -266,6 +289,7 @@ begin
   PoczekalniaSemafor := TSemaphore.Create(1, 1);
   MonitorKolejki := TSemaphore.Create(1, 1);
   GotowiKlienci := TSemaphore.Create;
+  Memo2Semaphore := TSemaphore.Create(1,1);
   Kolejka := TKolejkaWPoczekalni.Create;
 end;
 

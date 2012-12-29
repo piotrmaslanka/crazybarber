@@ -12,6 +12,8 @@ type
       private
         Handle: HANDLE;
       public
+        CurrentValue: Cardinal;
+
         constructor Create();
         constructor Create(StartingStatus, MaximumStatus: Cardinal);
         destructor Destroy;
@@ -48,6 +50,7 @@ end;
 constructor TSemaphore.Create(StartingStatus, MaximumStatus: Cardinal);
 begin
      Handle := CreateSemaphore(nil, StartingStatus, MaximumStatus, nil);
+     CurrentValue := StartingStatus;
 end;
 destructor TSemaphore.Destroy();
 begin
@@ -57,10 +60,12 @@ end;
 procedure TSemaphore.P();
 begin
    WaitForSingleObject(Handle, INFINITE);
+   System.InterLockedDecrement(self.CurrentValue);
 end;
 procedure TSemaphore.V();
 begin
    ReleaseSemaphore(Handle, 1, nil);
+   System.InterLockedIncrement(self.CurrentValue);
 end;
 
 end.

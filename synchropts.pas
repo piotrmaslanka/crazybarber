@@ -17,7 +17,6 @@ type
     // podczas normalnej pracy MySemaphore ma wartosc 0. W momencie kiedy
     // watek chce sie na nim powiesic, P()uje go i sie wiesza
     // watek glowny kiedys go odwiesi
-
     procedure SignalStep; // watek wywoluje jesli wykonal jakis element pracy
     constructor Create(CreateSuspended: Boolean);
 
