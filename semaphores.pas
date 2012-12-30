@@ -46,6 +46,7 @@ end;
 constructor TSemaphore.Create();
 begin
      Handle := CreateSemaphore(nil, 0, $FFFF, nil);
+     CurrentValue := 0;
 end;
 constructor TSemaphore.Create(StartingStatus, MaximumStatus: Cardinal);
 begin
