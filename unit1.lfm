@@ -3,7 +3,8 @@ object Form1: TForm1
   Height = 439
   Top = 264
   Width = 947
-  Caption = 'Crazy Barber'
+  BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
+  Caption = 'Problem śpiącego fryzjera'
   ClientHeight = 439
   ClientWidth = 947
   OnCreate = FormCreate
@@ -97,7 +98,7 @@ object Form1: TForm1
     ParentFont = False
   end
   object stsGotKli1: TLabel
-    Left = 464
+    Left = 432
     Height = 22
     Top = 224
     Width = 203
@@ -105,11 +106,11 @@ object Form1: TForm1
     ParentColor = False
   end
   object Label3: TLabel
-    Left = 520
+    Left = 456
     Height = 55
     Top = 160
-    Width = 24
-    Caption = '0'
+    Width = 47
+    Caption = '10'
     Font.Height = -40
     Font.Style = [fsBold]
     ParentColor = False

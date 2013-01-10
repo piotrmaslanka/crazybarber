@@ -1,5 +1,8 @@
 unit Unit1;
-
+// Crazy Barber - program demonstrujacy zagadnienie spiacego fryzjera
+// Copyright by Piotr Maślanka 2013, wszystkie prawa zastrzezone
+//
+//
 {$mode objfpc}{$H+}
 
 interface
@@ -8,8 +11,11 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls, Menus, Synchropts, fgl, semaphores;
 
-type
+ResourceString
+   Author = 'Piotr Maślanka';
+   AuthorEmail = 'piotr.maslanka@henrietta.com.pl';
 
+type
   TKlient = class(TManagedThread)
     public
           TID: Cardinal;
@@ -139,6 +145,7 @@ begin
 
 end;
 
+
 procedure TForm1.Krok;
 begin
   StartLockstep();
@@ -175,7 +182,7 @@ begin
       Memo1.Lines.Append('Fryzjer '+IntToStr(f.TID)+': '+f.status);
     end;
   end;
-  Memo1.Lines.Append('Typow w kolejce: '+IntToStr(Kolejka.Count));
+  Memo1.Lines.Append('Klientow w kolejce: '+IntToStr(Kolejka.Count));
   MonitorKolejki.V();
 end;
 
