@@ -213,14 +213,15 @@ begin
 
     if not Form1.loseClients.Checked then
     begin
-         status := 'Ide w kierunku poczekalni...';
+         status := 'Opuszczam semafor poczekalni...';
+         SignalStep;
          PoczekalniaSemafor.P();
-         Log('Pozyskany semafor poczekalni');
+         Log('Opuszczony semafor poczekalni');
     end;
     status := 'Jestem w poczekalni...'+MSP;
     self.SignalStep;
 
-    status := 'Zgarniam klienta'+MSP;
+    status := 'Biore klienta'+MSP;
     InterlockedIncrement(LiczbaWolnychSiedzen);
     if not Form1.loseClients.Checked then MonitorKolejki.P();
         GolonyKlient := Kolejka[0];
@@ -232,10 +233,10 @@ begin
 
     if not Form1.loseClients.Checked then
     begin
-        status := 'Zwalniam semafor poczekalni';
+        status := 'Podnosze semafor poczekalni';
+        SignalStep;
         PoczekalniaSemafor.V();
-        Log('Zwolniony semafor poczekalni');
-        self.SignalStep;
+        Log('Podniesiony semafor poczekalni');
     end;
 
     status := 'Gole klienta...';
@@ -260,10 +261,10 @@ begin
   self.SignalStep;
   if not Form1.loseClients.Checked then
   begin
-    status := 'Blokuje semafor poczekalni...';
+    status := 'Opuszczam semafor poczekalni...';
     self.SignalStep;
     PoczekalniaSemafor.P();
-    Log('Pozyskany semafor poczekalni');
+    Log('Opuszczony semafor poczekalni');
   end;
 
   InterlockedIncrement(CzytelnikowKlamiacych);
@@ -291,13 +292,10 @@ begin
 
     if not Form1.loseClients.Checked then
     begin
-      status := 'Bede zwalnial blokade poczekalni'+MSP;
+      status := 'Podnosze semafor poczekalni'+MSP;
       self.SignalStep;
-      Log('Zwolniony semafor poczekalni');
       PoczekalniaSemafor.V();
-
-      status := 'Juz zwolnilem blokade';
-      self.SignalStep;
+      Log('Podniesiony semafor poczekalni');
     end;
 
     status := 'Czekam az fryzjer mnie ogoli';
@@ -313,10 +311,10 @@ begin
       self.SignalStep;
     end else
     begin
-      status := 'Wychodze, nie ma miejsca. Zwalniam semafor poczekalni';
-      Log('Zwolniony semafor poczekalni');
-      PoczekalniaSemafor.V();
+      status := 'Wychodze, nie ma miejsca. Podnosze semafor poczekalni';
       self.SignalStep;
+      PoczekalniaSemafor.V();
+      Log('Zwolniony semafor poczekalni');
     end;
   end;
 
