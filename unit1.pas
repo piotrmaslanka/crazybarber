@@ -43,6 +43,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    loseClients: TCheckBox;
     stsGotKli: TLabel;
     stsGotKli1: TLabel;
     stsPoczekalni: TLabel;
@@ -79,6 +80,14 @@ var
   Form1: TForm1;
 
   Memo2Semaphore: TBinarySemaphore;   // semafor do ochrony Memo2
+
+  CzytelnikowKlamiacych: Cardinal = 0;   // czytelnikow ktorzy potencjalnie moga 'sklamac'
+   // mechanizm klamstwa jest po to zeby symulowac gubienie klientow, ze wzgledu na to ze
+   // na szybkich komputerach naturalny deadlock jest bardzo malo prawdopodobny, a pasuje
+   // zeby sie zamanifestowal
+
+   // jesli mamy tutaj wiecej niz jeden, to jeden z klientow moze sklamac i sie
+   // nie dopisac do kolejki ;)
 
 implementation
 
@@ -170,6 +179,14 @@ begin
   MonitorKolejki.V();
 end;
 
+
+function MSP: string;
+// zwraca [MAM SEMAFOR p] jesli nie gubimy klientow
+begin
+  result := '';
+  if not Form1.loseClients.Checked then result := ' [MAM SEMAFOR p]';
+end;
+
 procedure TFryzjer.Execute();
 var
   GolonyKlient: TKlient;
@@ -187,26 +204,32 @@ begin
     status := 'Hej, jest klient!';
     self.SignalStep;
 
-    status := 'Ide w kierunku poczekalni...';
-    PoczekalniaSemafor.P();
-    Log('Pozyskany semafor poczekalni');
-    status := 'Jestem w poczekalni... [MAM SEMAFOR p]';
+    if not Form1.loseClients.Checked then
+    begin
+         status := 'Ide w kierunku poczekalni...';
+         PoczekalniaSemafor.P();
+         Log('Pozyskany semafor poczekalni');
+    end;
+    status := 'Jestem w poczekalni...'+MSP;
     self.SignalStep;
 
-    status := 'Zgarniam klienta [MAM SEMAFOR p]';
+    status := 'Zgarniam klienta'+MSP;
     InterlockedIncrement(LiczbaWolnychSiedzen);
-    MonitorKolejki.P();
+    if not Form1.loseClients.Checked then MonitorKolejki.P();
         GolonyKlient := Kolejka[0];
         Kolejka.Delete(0);
-    MonitorKolejki.V();
+    if not Form1.loseClients.Checked then MonitorKolejki.V();
 
     if not GolonyKlient.Brodaty then
        Halt;
 
-    status := 'Zwalniam semafor poczekalni';
-    PoczekalniaSemafor.V();
-    Log('Zwolniony semafor poczekalni');
-    self.SignalStep;
+    if not Form1.loseClients.Checked then
+    begin
+        status := 'Zwalniam semafor poczekalni';
+        PoczekalniaSemafor.V();
+        Log('Zwolniony semafor poczekalni');
+        self.SignalStep;
+    end;
 
     status := 'Gole klienta...';
     GolonyKlient.status := 'Jestem golony...';
@@ -221,37 +244,54 @@ begin
 
 end;
 
+
 procedure TKlient.Execute();
 begin
   TID := GetThreadID();
   Form1.Memo2.Lines.Append('Klient '+IntToStr(TID)+' wkracza do gry');
   status := 'Czesc wszyscy';
   self.SignalStep;
-  status := 'Blokuje semafor poczekalni...';
-  self.SignalStep;
-  PoczekalniaSemafor.P();
-  Log('Pozyskany semafor poczekalni');
+  if not Form1.loseClients.Checked then
+  begin
+    status := 'Blokuje semafor poczekalni...';
+    self.SignalStep;
+    PoczekalniaSemafor.P();
+    Log('Pozyskany semafor poczekalni');
+  end;
+
+  InterlockedIncrement(CzytelnikowKlamiacych);
 
   if LiczbaWolnychSiedzen > 0 then
   begin
-    status := 'Rozsiadam sie [MAM SEMAFOR p]';
+    status := 'Rozsiadam sie'+MSP;
     InterlockedDecrement(LiczbaWolnychSiedzen);
-    MonitorKolejki.P();
-        Kolejka.Add(self);
-    MonitorKolejki.V();
+    if not Form1.loseClients.Checked then MonitorKolejki.P();
+
+    if Form1.loseClients.Checked and (CzytelnikowKlamiacych > 1) then
+       // to co, klamiemy :D
+    begin
+        if random(4) <> 1 then Kolejka.Add(self);           // 25% szansy na klamstwo
+    end else
+       Kolejka.Add(self); // albo nie chcemy zebys klamal albo nikogo nie przekonasz
+                          // nie dopisujac sie jak tylko jeden klient - ty - tutaj siedzisz
+    if not Form1.loseClients.Checked then MonitorKolejki.V();
     self.SignalStep;
 
-    status := 'Zglaszam ze jestem gotowy fryzjerowi [MAM SEMAFOR p]';
+    InterlockedDecrement(CzytelnikowKlamiacych);
+    status := 'Zglaszam ze jestem gotowy fryzjerowi'+MSP;
     GotowiKlienci.V();
     self.SignalStep;
 
-    status := 'Bede zwalnial blokade poczekalni [MAM SEMAFOR p]';
-    self.SignalStep;
-    Log('Zwolniony semafor poczekalni');
-    PoczekalniaSemafor.V();
+    if not Form1.loseClients.Checked then
+    begin
+      status := 'Bede zwalnial blokade poczekalni'+MSP;
+      self.SignalStep;
+      Log('Zwolniony semafor poczekalni');
+      PoczekalniaSemafor.V();
 
-    status := 'Juz zwolnilem blokade';
-    self.SignalStep;
+      status := 'Juz zwolnilem blokade';
+      self.SignalStep;
+    end;
 
     status := 'Czekam az fryzjer mnie ogoli';
     self.BrodatySemafor.P();
@@ -260,10 +300,17 @@ begin
     self.SignalStep;
   end else
   begin
-    status := 'Wychodze, nie ma miejsca. Zwalniam semafor poczekalni';
-    Log('Zwolniony semafor poczekalni');
-    PoczekalniaSemafor.V();
-    self.SignalStep;
+    if form1.loseClients.Checked then
+    begin
+      status := 'Wychodze, nie ma miejsca';
+      self.SignalStep;
+    end else
+    begin
+      status := 'Wychodze, nie ma miejsca. Zwalniam semafor poczekalni';
+      Log('Zwolniony semafor poczekalni');
+      PoczekalniaSemafor.V();
+      self.SignalStep;
+    end;
   end;
 
   Form1.Memo2.Lines.Append('Klient '+IntToStr(TID)+' wychodzi z gry');

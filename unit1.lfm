@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 197
+  Left = 393
   Height = 439
-  Top = 177
+  Top = 264
   Width = 947
   Caption = 'Crazy Barber'
   ClientHeight = 439
   ClientWidth = 947
   OnCreate = FormCreate
-  LCLVersion = '1.0.4.0'
+  LCLVersion = '1.0.2.0'
   object Memo1: TMemo
     Left = 8
     Height = 423
@@ -60,17 +60,17 @@ object Form1: TForm1
   end
   object stsPoczekalni: TLabel
     Left = 558
-    Height = 16
+    Height = 22
     Top = 120
-    Width = 104
+    Width = 137
     Caption = 'Semafor poczekalni'
     ParentColor = False
   end
   object stsGotKli: TLabel
     Left = 408
-    Height = 16
+    Height = 22
     Top = 120
-    Width = 132
+    Width = 172
     Caption = 'Semafor "gotowi klienci"'
     ParentColor = False
   end
@@ -98,9 +98,9 @@ object Form1: TForm1
   end
   object stsGotKli1: TLabel
     Left = 464
-    Height = 16
+    Height = 22
     Top = 224
-    Width = 156
+    Width = 203
     Caption = 'Wolnych miejsc w poczekalni'
     ParentColor = False
   end
@@ -114,6 +114,14 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+  end
+  object loseClients: TCheckBox
+    Left = 423
+    Height = 25
+    Top = 384
+    Width = 248
+    Caption = 'Nie używaj semafora poczekalni'
+    TabOrder = 6
   end
   object Timer1: TTimer
     Enabled = False
